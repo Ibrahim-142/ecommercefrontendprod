@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
-import axios from "axios";
 import { calculateOrderSubtotal } from "../utils/order.js";
 import { formatMoney } from "../utils/money.js";
 import { useToast } from "../contexts/ToastContext/useToast.js";
-
+import api from "../api/axios.js";
 const OrderDetailsPage = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
@@ -17,7 +16,7 @@ const OrderDetailsPage = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const res = await axios.get(`/api/orders/${id}`, {
+        const res = await api.get(`/api/orders/${id}`, {
           withCredentials: true,
         });
         setOrder(res.data);

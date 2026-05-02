@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useCart } from "../contexts/CartContext/useCart";
 import ShippingForm from "./ShippingFrom";
-import axios from "axios";
 import { getTotalItems, getTotalPrice, getShippingCost } from "../utils/cart";
 import { formatMoney, totalPriceWithShipping } from "../utils/money";
 import { useNavigate } from "react-router";
-
+import api from "../api/axios.js";
 const OrderSummary = () => {
   const [isAddressSaved, setIsAddressSaved] = useState(false);
   const [shippingType, setShippingType] = useState("standard");
@@ -82,7 +81,7 @@ const OrderSummary = () => {
       const shippingCost = getShippingCost(shippingType);
 
       // ✅ Place order
-      await axios.post(
+      await api.post(
         "/api/orders/placeOrder",
         {
           cart: formattedCart,
@@ -95,7 +94,7 @@ const OrderSummary = () => {
       );
 
       // ✅ Clear backend cart
-      await axios.post(
+      await api.post(
         "/api/cart/clearcart",
         {},
         { withCredentials: true }

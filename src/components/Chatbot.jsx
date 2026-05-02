@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import axios from "axios";
 import ChatInput from "./ChatInput";
 import ChatMessage from "./ChatMessage";
 import { useCart } from "../contexts/CartContext/useCart";
-
+import api from "../api/axios.js";
 const Chatbot = ({ onClose }) => {
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -23,7 +22,7 @@ const Chatbot = ({ onClose }) => {
     setIsTyping(true);
 
     try {
-      const res = await axios.post(
+      const res = await api.post(
         "/api/chatbot",
         { message: msg.message },
         { withCredentials: true }

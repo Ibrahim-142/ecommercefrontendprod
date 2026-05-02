@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { formatMoney } from "../utils/money";
 import { useNavigate } from "react-router";
-
+import api from "../api/axios.js";
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("All");
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
+    api
       .get("/api/orders", { withCredentials: true })
       .then((response) => {
         setOrders(response.data);
