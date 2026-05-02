@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "./api/axios";
+
 import { Routes, Route, useLocation, matchPath } from "react-router";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useSearch } from "./contexts/SearchContext/useSearch";
-import { SearchProvider } from "./contexts/SearchContext/SearchProvider";
 import { useAuth } from "./contexts/AuthContext/useAuth";
 
 import HomePage from "./pages/Homepage";
@@ -21,34 +21,40 @@ import Chatbot from "./components/Chatbot";
 function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-const { query } = useSearch();
+
+  const { query } = useSearch();
   const { user } = useAuth();
   const location = useLocation();
 
-useEffect(() => {
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
 
-      const url = query
-        ? `/api/products/search?q=${query}`
-        : `/api/products`;
+        const url = query
+          ? `/api/products/search?q=${query}`
+          : `/api/products`;
 
-      const res = await axios.get(url);
-      setProducts(res.data);
+        const res = await api.get(url);
+        setProducts(res.data);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchProducts();
+  }, [query]);
 
-  fetchProducts();
-}, [query]);
+
 
   const routes = [
     { path: "/", element: <LoginPage />, public: true },
     { path: "/register", element: <RegisterPage />, public: true },
-    { path: "/homepage", element: <HomePage products={products} loading={loading} />, public: false },
+    {
+      path: "/homepage",
+      element: <HomePage products={products} loading={loading} />,
+      public: false,
+    },
     { path: "/checkout", element: <CheckoutPage />, public: false },
     { path: "/orders", element: <OrdersPage />, public: false },
     { path: "/orders/:id", element: <OrderDetailsPage />, public: false },
@@ -60,7 +66,7 @@ useEffect(() => {
     matchPath({ path: r.path, end: true }, location.pathname)
   );
 
-  const showNavbar = user && currentRoute && !currentRoute.public;
+  const showNavbar = !!user && currentRoute && !currentRoute.public;
 
   return (
     <>
@@ -68,16 +74,18 @@ useEffect(() => {
 
       <Routes>
         {routes.map((r) => {
-          const element = r.public
-            ? r.element
-            : <ProtectedRoute>{r.element}</ProtectedRoute>;
+          const element = r.public ? (
+            r.element
+          ) : (
+            <ProtectedRoute>{r.element}</ProtectedRoute>
+          );
 
           return <Route key={r.path} path={r.path} element={element} />;
         })}
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-      </>
+    </>
   );
 }
 
