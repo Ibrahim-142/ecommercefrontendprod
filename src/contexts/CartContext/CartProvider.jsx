@@ -1,5 +1,5 @@
 import React, { useState, useEffect,useCallback } from "react";
-import axios from "axios";
+import api from "../../api/axios.js"
 import { CartContext } from "./CartContext.js";
 import { useAuth} from "../AuthContext/useAuth.js";
 
@@ -27,7 +27,7 @@ export const CartProvider = ({ children }) => {
     if (!user) return;
     setLoading(true);
     try {
-      const res = await axios.get("/api/cart", { withCredentials: true });
+      const res = await api.get("/api/cart", { withCredentials: true });
       setCart(deduplicateCart(res.data)); // ✅ replace & deduplicate
     } catch (error) {
       console.error("Error fetching cart:", error);
@@ -67,7 +67,7 @@ export const CartProvider = ({ children }) => {
     });
 
     try {
-      await axios.post(
+      await api.post(
         "/api/cart/addtocart",
         { product: product._id, count },
         { withCredentials: true }
@@ -91,7 +91,7 @@ export const CartProvider = ({ children }) => {
     );
 
     try {
-      await axios.post(
+      await api.post(
         "/api/cart/removefromcart",
         { productId },
         { withCredentials: true }
